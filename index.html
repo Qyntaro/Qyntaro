@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qyntaro Store</title>
+
+<style>
+body {
+  font-family: Arial;
+  margin: 0;
+  background: #f3f4f6;
+}
+
+/* HEADER */
+header {
+  background: linear-gradient(90deg, #7c3aed, #ec4899);
+  color: white;
+  text-align: center;
+  padding: 15px;
+  font-weight: bold;
+}
+
+/* GRID */
+.container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 12px;
+}
+
+/* CARD */
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.card img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* TEXT */
+.name {
+  font-size: 13px;
+  margin: 6px 0;
+}
+
+.price {
+  color: #16a34a;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* BUTTON */
+button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: none;
+  border-radius: 6px;
+  background: #22c55e;
+  color: white;
+  font-weight: bold;
+}
+
+/* FOOTER */
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+}
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background: white;
+  margin: 20% auto;
+  padding: 15px;
+  width: 80%;
+  border-radius: 10px;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+QYNTARO<br>
+<small>Premium Dishwashing Liquid</small>
+</header>
+
+<div class="container" id="products"></div>
+
+<footer>
+<span id="cart">Cart: 0 | ₱0</span>
+<button onclick="openCheckout()">Checkout</button>
+</footer>
+
+<!-- CHECKOUT -->
+<div class="modal" id="checkoutModal">
+  <div class="modal-content">
+    <h3>Checkout</h3>
+    <input id="name" placeholder="Your Name">
+    <input id="address" placeholder="Your Address">
+    <select id="payment">
+      <option>Cash on Delivery</option>
+      <option>GCash</option>
+    </select>
+    <button onclick="placeOrder()">Place Order</button>
+  </div>
+</div>
+
+<script>
+let products = [
+"Lavender & Bergamot",
+"Grapefruit & Ginger",
+"Ocean Mist & Sea Salt",
+"Apple & Green Tea",
+"Pomegranate & Hibiscus",
+"Lemon & Mint",
+"Jasmine & Pear",
+"Sandalwood & Neroli",
+"Aloe & Cucumber",
+"White Peach & Freesia"
+];
+
+let cartCount = 0;
+let total = 0;
+
+let container = document.getElementById("products");
+
+products.forEach(name => {
+  container.innerHTML += `
+  <div class="card">
+    <img src="products.jpg">
+    <div class="name">${name}</div>
+    <div class="price">₱40 / 1 Liter</div>
+    <button onclick="addToCart()">Add to Cart</button>
+  </div>`;
+});
+
+function addToCart() {
+  cartCount++;
+  total += 40;
+  document.getElementById("cart").innerText = 
+    "Cart: " + cartCount + " | ₱" + total;
+}
+
+function openCheckout() {
+  document.getElementById("checkoutModal").style.display = "block";
+}
+
+function placeOrder() {
+  let name = document.getElementById("name").value;
+  let address = document.getElementById("address").value;
+
+  if(name == "" || address == ""){
+    alert("Please fill all details");
+    return;
+  }
+
+  let message = `Order from Qyntaro:
+Name: ${name}
+Address: ${address}
+Items: ${cartCount}
+Total: ₱${total}`;
+
+  window.open(
+    "https://m.me/61576354337156?text=" + encodeURIComponent(message),
+    "_blank"
+  );
+}
+</script>
+
+</body>
+</html>
