@@ -1,202 +1,311 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Qyntaro Store</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QYNTARO - Premium Dishwashing Liquid</title>
 <style>
-body {
-  font-family: Arial;
-  margin: 0;
-  background: #f3f4f6;
-}
-
-/* HEADER */
-header {
-  background: linear-gradient(90deg, #7c3aed, #ec4899);
-  color: white;
-  text-align: center;
-  padding: 15px;
-  font-weight: bold;
-}
-
-/* GRID */
-.container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  padding: 12px;
-}
-
-/* CARD */
-.card {
-  background: white;
-  border-radius: 12px;
-  padding: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.card img {
-  width: 100%;
-  height: 130px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-/* TEXT */
-.name {
-  font-size: 13px;
-  margin: 6px 0;
-}
-
-.price {
-  color: #16a34a;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-/* BUTTON */
-button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  border: none;
-  border-radius: 6px;
-  background: #22c55e;
-  color: white;
-  font-weight: bold;
-}
-
-/* FOOTER */
-footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: white;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-}
-
-/* MODAL */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-}
-
-.modal-content {
-  background: white;
-  margin: 20% auto;
-  padding: 15px;
-  width: 80%;
-  border-radius: 10px;
-}
-
-input, select {
-  width: 100%;
-  padding: 10px;
-  margin-top: 8px;
-}
+    body { font-family: Arial, sans-serif; margin: 0; background: #f3f3f3; padding-bottom: 70px; }
+    .header { background: linear-gradient(90deg, #ff4d6d, #ff7a00); color: white; text-align: center; padding: 15px; font-weight: bold; }
+    .header small { display: block; font-weight: normal; margin-top: 5px; }
+    
+    .nav-buttons { display: flex; justify-content: center; gap: 10px; padding: 10px; background: white; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .nav-buttons button { padding: 8px 15px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+    
+    .container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
+    .card { background: white; padding: 10px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; justify-content: space-between; }
+    
+    /* Image styling updated to ensure it fills the space beautifully */
+    .card img { width: 100%; height: auto; aspect-ratio: 3/4; object-fit: cover; border-radius: 8px; background: #ddd; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    
+    .card-title { margin: 10px 0; font-size: 0.9em; line-height: 1.2; min-height: 35px; display: flex; align-items: center; justify-content: center; }
+    
+    .qty { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 10px 0; }
+    .qty button { width: 30px; height: 30px; background: #00a859; color: white; border: none; border-radius: 5px; font-size: 18px; cursor: pointer; }
+    .add { width: 100%; padding: 8px; background: #00a859; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+    
+    .cart-btn { position: fixed; bottom: 20px; right: 20px; background: #ff7a00; color: white; width: 60px; height: 60px; font-size: 24px; border: none; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; z-index: 100; }
+    
+    .panel { position: fixed; right: -100%; top: 0; width: 85%; height: 100%; background: white; transition: 0.3s; padding: 20px; overflow-y: auto; z-index: 200; box-shadow: -5px 0 15px rgba(0,0,0,0.1); box-sizing: border-box; }
+    .panel.active { right: 0; }
+    
+    .item { border-bottom: 1px solid #ddd; padding: 10px 0; }
+    input, select { width: 100%; margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+    .panel button { width: 100%; padding: 10px; margin-top: 10px; background: #00a859; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+    .panel button.close-btn { background: #dc3545; }
+    
+    .hidden { display: none !important; }
 </style>
-
 </head>
-
 <body>
 
-<header>
-QYNTARO<br>
-<small>Premium Dishwashing Liquid</small>
-</header>
-
-<div class="container" id="products"></div>
-
-<footer>
-<span id="cart">Cart: 0 | ₱0</span>
-<button onclick="openCheckout()">Checkout</button>
-</footer>
-
-<!-- CHECKOUT -->
-<div class="modal" id="checkoutModal">
-  <div class="modal-content">
-    <h3>Checkout</h3>
-    <input id="name" placeholder="Your Name">
-    <input id="address" placeholder="Your Address">
-    <select id="payment">
-      <option>Cash on Delivery</option>
-      <option>GCash</option>
-    </select>
-    <button onclick="placeOrder()">Place Order</button>
-  </div>
+<div class="header">
+    QYNTARO<br>
+    <small>Premium Dishwashing Liquid</small>
 </div>
 
-<script>
-let products = [
-"Lavender & Bergamot",
-"Grapefruit & Ginger",
-"Ocean Mist & Sea Salt",
-"Apple & Green Tea",
-"Pomegranate & Hibiscus",
-"Lemon & Mint",
-"Jasmine & Pear",
-"Sandalwood & Neroli",
-"Aloe & Cucumber",
-"White Peach & Freesia"
+<div class="nav-buttons">
+    <button onclick="toggleTrack()">Track Order</button>
+    <button onclick="toggleAdmin()">Admin Login</button>
+</div>
+
+<div id="store" class="container"></div>
+
+<button class="cart-btn" onclick="toggleCart()">🛒</button>
+
+<div id="cartPanel" class="panel">
+    <h3>Your Cart</h3>
+    <div id="cartItems"></div>
+    <h4>Total: ₱<span id="total">0</span></h4>
+    
+    <input id="name" placeholder="Your Full Name">
+    <input id="address" placeholder="Delivery Address">
+    
+    <select id="payment">
+        <option value="">Select Payment Method</option>
+        <option value="COD">Cash on Delivery (COD)</option>
+        <option value="GCash">GCash</option>
+    </select>
+    
+    <div id="gcash" class="hidden" style="background:#f0f8ff; padding:10px; border-radius:5px; margin-bottom:10px;">
+        <b>Send payment to GCash:</b><br>09695973854
+    </div>
+    
+    <button onclick="placeOrder()">Place Order</button>
+    <button class="close-btn" onclick="toggleCart()">Close Cart</button>
+</div>
+
+<div id="adminLogin" class="panel">
+    <h3>Admin Login</h3>
+    <input type="password" id="pass" placeholder="Enter Password">
+    <button onclick="login()">Enter</button>
+    <button class="close-btn" onclick="toggleAdmin()">Close</button>
+</div>
+
+<div id="adminPanel" class="panel">
+    <h3>Admin Dashboard</h3>
+    <div id="orders"></div>
+    <button class="close-btn" onclick="closeAdminPanel()">Close Dashboard</button>
+</div>
+
+<div id="trackPanel" class="panel">
+    <h3>Track Order</h3>
+    <input id="trackName" placeholder="Enter the name used for the order">
+    <button onclick="track()">Check Status</button>
+    <div id="trackResult" style="margin-top: 15px; font-weight: bold;"></div>
+    <button class="close-btn" onclick="toggleTrack()">Close</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// Initialize Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyBDvgWAxkcdX5sta76Cs2BhuFUwVO4HES8",
+    authDomain: "qyntaro.firebaseapp.com",
+    projectId: "qyntaro"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const FB = "61576354337156"; // Facebook Page ID
+
+// Products Array (Directly mapped to your renamed files)
+const products = [
+    { name: "Lavender & Bergamot", img: "837.jpg" },
+    { name: "Grapefruit & Ginger", img: "838.jpg" },
+    { name: "Ocean Mist & Sea Salt", img: "839.jpg" },
+    { name: "Apple & Green Tea", img: "840.jpg" },
+    { name: "Pomegranate & Hibiscus", img: "841.jpg" },
+    { name: "Lemon & Mint", img: "842.jpg" },
+    { name: "Jasmine & Pear", img: "843.jpg" },
+    { name: "Sandalwood & Neroli", img: "844.jpg" },
+    { name: "Aloe & Cucumber", img: "845.jpg" },
+    { name: "White Peach & Freesia", img: "846.jpg" }
 ];
 
-let cartCount = 0;
+let cart = [];
 let total = 0;
+let qty = {};
 
-let container = document.getElementById("products");
+const store = document.getElementById("store");
 
-products.forEach(name => {
-  container.innerHTML += `
-  <div class="card">
-    <img src="products.jpg">
-    <div class="name">${name}</div>
-    <div class="price">₱40 / 1 Liter</div>
-    <button onclick="addToCart()">Add to Cart</button>
-  </div>`;
+// Render Products dynamically
+products.forEach((p, i) => {
+    qty[i] = 1;
+    store.innerHTML += `
+    <div class="card">
+        <img src="${p.img}" alt="${p.name}">
+        <div class="card-title"><b>${p.name}</b></div>
+        
+        <select id="s${i}">
+            <option value="30">500ml - ₱30</option>
+            <option value="45">1L - ₱45</option>
+            <option value="150">Gallon - ₱150</option>
+        </select>
+        
+        <div class="qty">
+            <button onclick="q(${i}, -1)">-</button>
+            <span id="q${i}">1</span>
+            <button onclick="q(${i}, 1)">+</button>
+        </div>
+        
+        <button class="add" onclick="add(${i})">Add to Cart</button>
+    </div>`;
 });
 
-function addToCart() {
-  cartCount++;
-  total += 40;
-  document.getElementById("cart").innerText = 
-    "Cart: " + cartCount + " | ₱" + total;
+// Global Window Attachments
+window.q = (i, v) => {
+    qty[i] += v;
+    if (qty[i] < 1) qty[i] = 1;
+    document.getElementById("q" + i).innerText = qty[i];
+};
+
+window.add = (i) => {
+    let s = document.getElementById("s" + i);
+    let price = parseInt(s.value);
+    let text = s.options[s.selectedIndex].text;
+
+    cart.push({ name: products[i].name, desc: text, qty: qty[i], price: price });
+    total += price * qty[i];
+    
+    renderCart();
+
+    qty[i] = 1;
+    document.getElementById("q" + i).innerText = 1;
+    alert(products[i].name + " added to cart!");
+};
+
+function renderCart() {
+    let html = "";
+    cart.forEach((c, i) => {
+        html += `<div class="item">${i + 1}. <b>${c.name}</b><br><small>${c.desc}</small> x${c.qty} (₱${c.price * c.qty})</div>`;
+    });
+    document.getElementById("cartItems").innerHTML = html || "<p>Your cart is empty.</p>";
+    document.getElementById("total").innerText = total;
 }
 
-function openCheckout() {
-  document.getElementById("checkoutModal").style.display = "block";
+// UI Toggles
+window.toggleCart = () => document.getElementById("cartPanel").classList.toggle("active");
+window.toggleAdmin = () => document.getElementById("adminLogin").classList.toggle("active");
+window.toggleTrack = () => document.getElementById("trackPanel").classList.toggle("active");
+window.closeAdminPanel = () => {
+    document.getElementById("adminPanel").classList.remove("active");
+    document.getElementById("adminLogin").classList.remove("active");
+};
+
+// Payment Event Listener
+document.getElementById("payment").addEventListener('change', (e) => {
+    const gcashDiv = document.getElementById("gcash");
+    if (e.target.value === "GCash") {
+        gcashDiv.classList.remove("hidden");
+    } else {
+        gcashDiv.classList.add("hidden");
+    }
+});
+
+// Place Order
+window.placeOrder = async () => {
+    let name = document.getElementById("name").value.trim();
+    let address = document.getElementById("address").value.trim();
+    let payment = document.getElementById("payment").value;
+
+    if (!name || !address || !payment || cart.length === 0) {
+        alert("Please complete your details and add items to your cart!");
+        return;
+    }
+
+    try {
+        await addDoc(collection(db, "orders"), {
+            name, address, payment, cart, total, status: "Pending", timestamp: new Date()
+        });
+
+        let msg = `New Order from ${name}:\n\n`;
+        cart.forEach((c, i) => msg += `${i + 1}. ${c.name} (${c.desc}) x${c.qty}\n`);
+        msg += `\nTotal: ₱${total}\nPayment: ${payment}\nAddress: ${address}`;
+
+        window.open("https://m.me/" + FB + "?text=" + encodeURIComponent(msg));
+
+        // Clear Fields
+        cart = []; total = 0;
+        document.getElementById("name").value = "";
+        document.getElementById("address").value = "";
+        document.getElementById("payment").value = "";
+        document.getElementById("gcash").classList.add("hidden");
+        
+        renderCart(); toggleCart();
+        alert("Order placed successfully!");
+    } catch (error) {
+        console.error("Error adding document: ", error);
+        alert("Error placing order. Please try again.");
+    }
+};
+
+// Admin
+window.login = () => {
+    if (document.getElementById("pass").value === "admin123") {
+        document.getElementById("adminPanel").classList.add("active");
+        document.getElementById("pass").value = ""; 
+        loadOrders();
+    } else {
+        alert("Incorrect password!");
+    }
+};
+
+async function loadOrders() {
+    try {
+        let snap = await getDocs(collection(db, "orders"));
+        let html = "";
+        snap.forEach(d => {
+            let o = d.data();
+            html += `
+            <div class="item">
+                <b>${o.name}</b> - <span style="color: #ff7a00;">${o.status}</span><br>
+                <small>${o.address} | ₱${o.total} | ${o.payment}</small><br>
+                <button onclick="update('${d.id}', 'Confirmed')" style="background:#17a2b8;">Confirm</button>
+                <button onclick="update('${d.id}', 'Delivered')" style="background:#28a745;">Done</button>
+            </div>`;
+        });
+        document.getElementById("orders").innerHTML = html || "<p>No orders yet.</p>";
+    } catch (error) {
+        console.error("Error loading orders:", error);
+    }
 }
 
-function placeOrder() {
-  let name = document.getElementById("name").value;
-  let address = document.getElementById("address").value;
+window.update = async (id, s) => {
+    try {
+        await updateDoc(doc(db, "orders", id), { status: s });
+        loadOrders();
+    } catch (error) {
+        console.error("Error updating order:", error);
+    }
+};
 
-  if(name == "" || address == ""){
-    alert("Please fill all details");
-    return;
-  }
+// Track
+window.track = async () => {
+    let name = document.getElementById("trackName").value.trim().toLowerCase();
+    if (!name) return;
+    
+    try {
+        let snap = await getDocs(collection(db, "orders"));
+        let res = "";
+        snap.forEach(d => {
+            let o = d.data();
+            if (o.name.toLowerCase() === name) {
+                res += `<div style="padding:10px; border:1px solid #ccc; margin-top:5px; border-radius:5px;">
+                            Order Total: ₱${o.total}<br>Status: <span style="color:#ff7a00;">${o.status}</span>
+                        </div>`;
+            }
+        });
+        document.getElementById("trackResult").innerHTML = res || "<p style='color:red;'>No order found.</p>";
+    } catch (error) {
+        console.error("Error tracking order:", error);
+    }
+};
 
-  let message = `Order from Qyntaro:
-Name: ${name}
-Address: ${address}
-Items: ${cartCount}
-Total: ₱${total}`;
-
-  window.open(
-    "https://m.me/61576354337156?text=" + encodeURIComponent(message),
-    "_blank"
-  );
-}
+// Initialize empty cart state
+renderCart();
 </script>
-
 </body>
 </html>
